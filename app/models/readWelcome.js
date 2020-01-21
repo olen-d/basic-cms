@@ -1,13 +1,11 @@
 const assert = require("assert");
 
 const data = db => {
-	// console.log("readWelcome.js - DB\n",db);
   return new Promise((resolve, reject) => {
 		try {
-			const welcome = db.collection("welcome");
-			// console.log(welcome);
-			welcome.find({}, { headline: 1 }).toArray((err, data) => {
-				// console.log("DATA", data);
+			const collection = db.collection("welcome");
+
+			collection.find({}, { headline: 1 }).toArray((err, data) => {
 				err ? resolve(err) : resolve(data);
 			});
 		} catch (err) {

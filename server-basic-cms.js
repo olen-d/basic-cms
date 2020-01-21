@@ -15,7 +15,7 @@ app.use("/basic-cms/api", require("./app/routes/welcomeRoutes"));
 // Database
 const url = process.env.MONGODB_URL;
 const dbName = process.env.MONGODB_DB_NAME;
-MongoClient.connect(url, { useNewUrlParser: true })
+MongoClient.connect(url, { useUnifiedTopology: true, useNewUrlParser: true })
 .then(client => {
   const db = client.db(dbName);
   app.locals.db = db;
