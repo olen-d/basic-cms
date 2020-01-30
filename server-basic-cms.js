@@ -13,9 +13,22 @@ app.use(express.json());
 const MongoClient = require("mongodb").MongoClient;
 const assert = require("assert");
 
+// CORS
+
+const cors = require("cors");
 if (process.env.ENVIRONMENT === "dev") {
-  const cors = require("cors");
   app.use(cors());
+} else {
+  const whitelist = [
+    "https://recurrentbokeh.com",
+    "https://www.recurrentbokeh.com"
+  ];
+  const corsOptions = {
+    origin: (origin, callback) => {
+      whitelist.indexOf(origin) !== -1 ? callback(null, true) : callback(new Error("Not allowed by CORS"))
+    }
+  }
+  app.use(cors(corsOptions));
 }
 
 // Routes
@@ -32,4 +45,3 @@ MongoClient.connect(url, { useUnifiedTopology: true, useNewUrlParser: true })
   app.locals.db = db;
   app.listen(port, () => console.log(`Basic CMS API listening on port ${port}`));
 });
-
