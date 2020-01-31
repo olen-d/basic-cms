@@ -14,15 +14,11 @@ const MongoClient = require("mongodb").MongoClient;
 const assert = require("assert");
 
 // CORS
-
 const cors = require("cors");
 if (process.env.ENVIRONMENT === "dev") {
   app.use(cors());
 } else {
-  const whitelist = [
-    "https://recurrentbokeh.com",
-    "https://www.recurrentbokeh.com"
-  ];
+  const whitelist = process.env.CORS_WHITELIST.split(",");
   const corsOptions = {
     origin: (origin, callback) => {
       whitelist.indexOf(origin) !== -1 ? callback(null, true) : callback(new Error("Not allowed by CORS"))
@@ -32,7 +28,6 @@ if (process.env.ENVIRONMENT === "dev") {
 }
 
 // Routes
-// app.get("/", (req, res) => res.send("Word up, homechickens!"));
 app.use("/basic-cms/api", require("./app/routes/usersRoutes"));
 app.use("/basic-cms/api", require("./app/routes/welcomeRoutes"));
 
