@@ -3,14 +3,14 @@ const assert = require("assert");
 const data = (db, userInfo) => {
   return new Promise((resolve, reject) => {
     const collection = db.collection("users");
-    const { firstName, lastName, email, userName, password } = userInfo;
+    const { firstName, lastName, email, username, password } = userInfo;
     try {
       collection.insertOne(
         {
           firstName,
           lastName,
           email,
-          userName,
+          username,
           password,
           editor: false,
           administrator: false
