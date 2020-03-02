@@ -11,36 +11,41 @@ const bcrypt = require("../helpers/bcrypt-module");
 
 exports.create_user = (req, res) => {
   const db = req.app.locals.db;
-  const { firstName, lastName, email, username, password } = req.body;
+  const { email, password } = req.body;
 
   bcrypt.newPass(password).then(pwdRes => {
     if (pwdRes.status === 200) {
       const userInfo = {
-        firstName,
-        lastName,
         email,
-        username,
         password: pwdRes.passwordHash
       };
 
-      createUser
-        .data(db, userInfo)
-        .then(resolve => {
-          delete resolve.password;
-          jwt.sign(
-            resolve,
-            process.env.SECRET,
-            { expiresIn: "1h" },
-            (err, token) => {
-              return res.send({
-                isLoggedIn: true,
-                token
-              });
-            }
-          );
+      createUser.data(db, userInfo)
+        .then(result => {
+          if (result.success) {
+            console.log(result.response);
+            jwt.sign(
+              result.response,
+              process.env.SECRET,
+              { expiresIn: "1h" },
+              (error, token) => {
+                if (error) {
+                  return res.send({
+                    isLoggedIn: false,
+                    error
+                  })
+                } else {
+                  return res.send({
+                    isLoggedIn: true,
+                    token
+                  });
+                }
+              }
+            );
+          }
         })
-        .catch(err => {
-          res.json(err);
+        .catch(error => {
+          res.json(error);
         });
     }
   });
