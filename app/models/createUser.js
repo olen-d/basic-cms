@@ -3,30 +3,51 @@ const assert = require("assert");
 const data = (db, userInfo) => {
   return new Promise((resolve, reject) => {
     const collection = db.collection("users");
-    const { firstName, lastName, email, username, password } = userInfo;
+    const { email, password } = userInfo;
     try {
       collection.insertOne(
         {
-          firstName,
-          lastName,
           email,
-          username,
           password,
           editor: false,
           administrator: false
         },
-        (error, response) => {
+        (error, result) => {
           if (error) {
-            resolve(error);
+            resolve({
+              success: false,
+              errors: [
+                {
+                  status: 601,
+                  message: "Database error. Failed to create new user"
+                }
+              ],
+              error});
           } else {
-            resolve(response);
+            const { ops: [{ email, editor, administrator, _id: userId}] } = result;
+            const response = {
+              userId,
+              email,
+              editor,
+              administrator
+            }
+            resolve({
+              success: true,
+              response
+            });
           }
         }
       );
-    } catch (err) {
+    } catch (error) {
       reject({
-        status: 500,
-        error: "Internal server error. Failed to create new user."
+        success: false,
+        errors: [
+          {
+            status: 600,
+            message: "Undetermined error. Failed to create new user."
+          }
+        ],
+        error
       });
     }
   });
